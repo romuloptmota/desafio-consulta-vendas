@@ -36,11 +36,11 @@ public class SaleService {
 			String dataInicial, String dataFinal, String name, Pageable pageable) {
 
 		LocalDate finalData , inicialData;
-		if(dataFinal == null || dataFinal.isBlank()) {
+		if(dataFinal.isBlank()) {
 			finalData = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 		} else {finalData = LocalDate.parse(dataFinal); }
 
-		if(dataInicial == null || dataInicial.isBlank()) {
+		if(dataInicial.isBlank()) {
 			inicialData = finalData.minusYears(1L);
 		} else {inicialData = LocalDate.parse(dataInicial);}
 
