@@ -3,14 +3,15 @@ package com.devsuperior.dsmeta.services;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import com.devsuperior.dsmeta.dto.SellerSalesDto;
 import com.devsuperior.dsmeta.entities.Seller;
+import com.devsuperior.dsmeta.projections.SellerSalesSumProjection;
 import com.devsuperior.dsmeta.repositories.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,10 +33,27 @@ public class SaleService {
 		return new SaleMinDTO(entity);
 	}
 
-	public Page<SellerSalesDto> findAll(
+	//RELATÓRIO DE VENDAS
+	public Page<SellerSalesDto> searchSellerSales(
 			String dataInicial, String dataFinal, String name, Pageable pageable) {
 
-		LocalDate finalData , inicialData;
+		convertStringToDate(dataInicial, dataFinal);
+		Page<Seller> result = sellerRepository.searchSellerSales(
+				inicialData, finalData,name, pageable);
+		return result.map(s -> new SellerSalesDto(s));
+	}
+
+	//SUMÁRIO DE VENDAS POR VENDEDOR
+    public List<SellerSalesSumProjection> SellerSalesSum(String dataInicial, String dataFinal) {
+		convertStringToDate(dataInicial, dataFinal);
+		List<SellerSalesSumProjection> result = sellerRepository.searchSellerSalesSum(inicialData, finalData);
+		return result;
+    }
+
+	//CONVERTE STRING PARA LOCAL DATE
+	LocalDate finalData , inicialData;
+	public void convertStringToDate(String dataInicial, String dataFinal) {
+
 		if(dataFinal.isBlank()) {
 			finalData = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 		} else {finalData = LocalDate.parse(dataFinal); }
@@ -44,9 +62,6 @@ public class SaleService {
 			inicialData = finalData.minusYears(1L);
 		} else {inicialData = LocalDate.parse(dataInicial);}
 
-		Page<Seller> result = sellerRepository.searchSellerSales(
-				inicialData, finalData,name, pageable);
-
-		return result.map(s -> new SellerSalesDto(s));
 	}
+
 }
