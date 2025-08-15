@@ -27,6 +27,8 @@ public class SaleService {
 	@Autowired
 	private SellerRepository sellerRepository;
 
+	LocalDate finalData , inicialData;
+
 	public SaleMinDTO findById(Long id) {
 		Optional<Sale> result = saleRepository.findById(id);
 		Sale entity = result.get();
@@ -51,7 +53,6 @@ public class SaleService {
     }
 
 	//CONVERTE STRING PARA LOCAL DATE
-	LocalDate finalData , inicialData;
 	public void convertStringToDate(String dataInicial, String dataFinal) {
 
 		if(dataFinal.isBlank()) {
