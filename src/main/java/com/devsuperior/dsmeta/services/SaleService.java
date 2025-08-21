@@ -6,8 +6,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
-import com.devsuperior.dsmeta.dto.SellerSalesDto;
-import com.devsuperior.dsmeta.entities.Seller;
+import com.devsuperior.dsmeta.projections.SellerSalesReportProjection;
 import com.devsuperior.dsmeta.projections.SellerSalesSumProjection;
 import com.devsuperior.dsmeta.repositories.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +35,13 @@ public class SaleService {
 	}
 
 	//RELATÓRIO DE VENDAS
-	public Page<SellerSalesDto> searchSellerSales(
+	public Page<SellerSalesReportProjection> searchSellerSales(
 			String dataInicial, String dataFinal, String name, Pageable pageable) {
 
 		convertStringToDate(dataInicial, dataFinal);
-		Page<Seller> result = sellerRepository.searchSellerSales(
-				inicialData, finalData,name, pageable);
-		return result.map(s -> new SellerSalesDto(s));
+		Page<SellerSalesReportProjection> result = sellerRepository.searchSellerSalesReport(
+				inicialData, finalData, name, pageable);
+		return result;
 	}
 
 	//SUMÁRIO DE VENDAS POR VENDEDOR
@@ -55,11 +54,11 @@ public class SaleService {
 	//CONVERTE STRING PARA LOCAL DATE
 	public void convertStringToDate(String dataInicial, String dataFinal) {
 
-		if(dataFinal.isBlank()) {
+		if(dataFinal.isBlank() || dataFinal.isEmpty() || dataFinal == null) {
 			finalData = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
 		} else {finalData = LocalDate.parse(dataFinal); }
 
-		if(dataInicial.isBlank()) {
+		if(dataInicial.isBlank() || dataInicial.isEmpty() || dataInicial == null) {
 			inicialData = finalData.minusYears(1L);
 		} else {inicialData = LocalDate.parse(dataInicial);}
 
